@@ -6,7 +6,7 @@ import {IPermit2} from "./interfaces/IPermit2.sol";
 import {IPositionManager} from "./interfaces/IPositionManager.sol";
 import {PoolKey} from "./types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "./types/PoolId.sol";
-import {Actions} from "../libraries/Actions.sol";
+import {Actions} from "./libraries/Actions.sol";
 import {POSITION_MANAGER, USDC, PERMIT2} from "./Constants.sol";
 
 contract RebalancingPosition {
