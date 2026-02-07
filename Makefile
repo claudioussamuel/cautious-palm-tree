@@ -57,6 +57,7 @@ endif
 endif
 endif
 
+
 deploy:
 	@forge script script/RebalancingPosition.s.sol:DeployRebalancingPosition $(NETWORK_ARGS)
 
@@ -65,6 +66,18 @@ deploy-sepolia:
 
 deploy-testnet:
 	@forge script script/RebalancingPosition.s.sol:DeployRebalancingPosition --rpc-url $(TESTNET_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
+
+mint:
+	@forge script script/Interactions.s.sol:MintPosition $(NETWORK_ARGS)
+
+increase:
+	@forge script script/Interactions.s.sol:IncreaseLiquidity $(NETWORK_ARGS)
+
+decrease:
+	@forge script script/Interactions.s.sol:DecreaseLiquidity $(NETWORK_ARGS)
+
+burn:
+	@forge script script/Interactions.s.sol:BurnPosition $(NETWORK_ARGS)
 
 
 

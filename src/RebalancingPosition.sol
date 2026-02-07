@@ -2,24 +2,21 @@
 pragma solidity 0.8.30;
 
 import {IERC20} from "./interfaces/IERC20.sol";
-import {IPermit2} from "./interfaces/IPermit2.sol";
 import {IPositionManager} from "./interfaces/IPositionManager.sol";
 import {PoolKey} from "./types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "./types/PoolId.sol";
 import {Actions} from "./libraries/Actions.sol";
-import {POSITION_MANAGER, USDC, PERMIT2} from "./Constants.sol";
+import {USDC} from "./Constants.sol";
 
 contract RebalancingPosition {
     using PoolIdLibrary for PoolKey;
 
-    IPositionManager constant posm = IPositionManager(POSITION_MANAGER);
+    IPositionManager public immutable posm;
 
     // currency0 = ETH for this exercise
-    constructor(address currency1) {
-        IERC20(currency1).approve(PERMIT2, type(uint256).max);
-        IPermit2(PERMIT2).approve(
-            currency1, address(posm), type(uint160).max, type(uint48).max
-        );
+    constructor(address _posm, address currency1) {
+        posm = IPositionManager(_posm);
+        IERC20(currency1).approve(address(posm), type(uint256).max);
     }
 
     receive() external payable {}
@@ -64,7 +61,8 @@ contract RebalancingPosition {
         uint256 tokenId = posm.nextTokenId();
 
         posm.modifyLiquidities{value: address(this).balance}(
-            abi.encode(actions, params), block.timestamp
+            abi.encode(actions, params),
+            block.timestamp
         );
 
         return tokenId;
@@ -107,7 +105,8 @@ contract RebalancingPosition {
         params[3] = abi.encode(address(0), address(this));
 
         posm.modifyLiquidities{value: address(this).balance}(
-            abi.encode(actions, params), block.timestamp
+            abi.encode(actions, params),
+            block.timestamp
         );
     }
 
@@ -118,7 +117,8 @@ contract RebalancingPosition {
         uint128 amount1Min
     ) external {
         bytes memory actions = abi.encodePacked(
-            uint8(Actions.DECREASE_LIQUIDITY), uint8(Actions.TAKE_PAIR)
+            uint8(Actions.DECREASE_LIQUIDITY),
+            uint8(Actions.TAKE_PAIR)
         );
         bytes[] memory params = new bytes[](2);
 
@@ -139,11 +139,14 @@ contract RebalancingPosition {
         posm.modifyLiquidities(abi.encode(actions, params), block.timestamp);
     }
 
-    function burn(uint256 tokenId, uint128 amount0Min, uint128 amount1Min)
-        external
-    {
+    function burn(
+        uint256 tokenId,
+        uint128 amount0Min,
+        uint128 amount1Min
+    ) external {
         bytes memory actions = abi.encodePacked(
-            uint8(Actions.BURN_POSITION), uint8(Actions.TAKE_PAIR)
+            uint8(Actions.BURN_POSITION),
+            uint8(Actions.TAKE_PAIR)
         );
         bytes[] memory params = new bytes[](2);
 
