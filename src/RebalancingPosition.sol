@@ -22,11 +22,24 @@ contract RebalancingPosition {
     receive() external payable {}
 
     function mint(
-        PoolKey calldata key,
+        address currency0,
+        address currency1,
+        uint24 fee,
+        int24 tickSpacing,
+        address hooks,
         int24 tickLower,
         int24 tickUpper,
         uint256 liquidity
     ) external payable returns (uint256) {
+        // Construct PoolKey from individual parameters
+        PoolKey memory key = PoolKey({
+            currency0: currency0,
+            currency1: currency1,
+            fee: fee,
+            tickSpacing: tickSpacing,
+            hooks: hooks
+        });
+
         bytes memory actions = abi.encodePacked(
             uint8(Actions.MINT_POSITION),
             uint8(Actions.SETTLE_PAIR),
