@@ -8,12 +8,16 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 contract DeployRebalancingPosition is Script {
     function run() external returns (RebalancingPosition, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig();
-        (address currency1, address positionManager) = helperConfig
-            .activeNetworkConfig();
+        (
+            address positionManager,
+            address forwarderAddress,
+            address currency1
+        ) = helperConfig.activeNetworkConfig();
 
         vm.startBroadcast();
         RebalancingPosition rebalancingPosition = new RebalancingPosition(
             positionManager,
+            forwarderAddress,
             currency1
         );
         vm.stopBroadcast();
